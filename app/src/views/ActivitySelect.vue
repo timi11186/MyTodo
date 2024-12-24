@@ -12,78 +12,123 @@ const activitySchedules: Record<string, Todo[]> = {
     {
       id: 1,
       text: '晨间计划制定',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '08:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '08:00',
-      duration: '30分钟'
+      from: 1,
+      createdAt: new Date(),
     },
     {
       id: 2,
       text: '午间进度检查',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '12:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '12:00',
-      duration: '30分钟'
+      from: 1,
+      createdAt: new Date(),
     },
     {
       id: 3,
       text: '总结今日完成情况',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '18:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '18:00',
-      duration: '30分钟'
+      createdAt: new Date(),
+      from: 1,
     }
   ],
   '学习成长计划': [
     {
       id: 4,
       text: '制定今日学习目标',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '08:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '08:00',
-      duration: '30分钟'
+      from: 2,
+      createdAt: new Date(),
     },
     {
       id: 5,
       text: '复习巩固',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '12:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '12:00',
-      duration: '30分钟'
+      from: 2,
+      createdAt: new Date(),
     },
     {
       id: 6,
       text: '记录学习心得',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '20:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '20:00',
-      duration: '30分钟'
+      from: 2,
+      createdAt: new Date(),
     }
   ],
   '健康生活挑战': [
     {
       id: 7,
       text: '晨间运动',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '08:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '08:00',
-      duration: '30分钟'
+      from: 3,
+      createdAt: new Date(),
     },
     {
       id: 8,
       text: '营养午餐打卡',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '12:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '12:00',
-      duration: '30分钟'
+      from: 3,
+      createdAt: new Date(),
     },
     {
       id: 9,
       text: '睡前放松活动',
-      type: 'daily',
+      type:"daily",
+      typeData: {
+        startTime: '22:00',
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      },
       completed: false,
-      startTime: '22:00',
-      duration: '30分钟'
+      from: 3,
+      createdAt: new Date(),
     }
   ]
 }
@@ -111,6 +156,29 @@ const activities: Activity[] = [
     duration: '21天'
   }
 ]
+
+const todoType = (type:string)=>{
+  switch (type) {
+    case "daily":
+      return "每日任务"
+    case "weekly":
+      return "每周任务"
+    case "monthly":
+      return "每月任务"
+    case "yearly":
+      return "每年任务"
+    case "specifiedTime":
+      return "指定时间任务"
+    default:
+      return "未知任务"
+  }
+
+}
+
+// 活动详情
+const activityDetails = (activity:Activity)=>{
+  router.push(`/activity-details/${activity.id}`)
+}
 
 // 检查是否已经选择了活动
 onMounted(() => {
@@ -171,7 +239,9 @@ const joinActivity = () => {
           >
             <div class="activity-header">
               <h3>{{ activity.name }}</h3>
-              <span class="duration-badge">{{ activity.duration }}</span>
+              <span class="duration-badge" v-show="selectedActivity != activity.name">{{
+                activity.duration
+              }}</span>
             </div>
             <p class="description">{{ activity.description }}</p>
 
@@ -179,25 +249,42 @@ const joinActivity = () => {
             <div class="schedule-preview" v-if="selectedActivity === activity.name">
               <h4>活动安排</h4>
               <div class="schedule-items">
-                <div
-                  v-for="schedule in activitySchedules[activity.name]"
-                  :key="schedule.id"
-                  class="schedule-item"
-                >
+                <div v-for="index in 3" :key="index" class="schedule-item">
                   <div class="schedule-time">
                     <span class="time-icon">⏰</span>
-                    <span>{{ schedule.startTime }}</span>
-                    <span class="duration-tag">{{ schedule.duration }}</span>
+                    <span>{{
+                      activitySchedules[activity.name][index - 1].typeData.startTime
+                    }}</span>
                   </div>
                   <div class="schedule-content">
-                    <div class="schedule-name">{{ schedule.name }}</div>
-                    <div class="schedule-desc">{{ schedule.description }}</div>
+                    <div class="schedule-name type-name">
+                      {{ todoType(activitySchedules[activity.name][index - 1].type) }}
+                    </div>
+                    <div class="schedule-name">
+                      {{ activitySchedules[activity.name][index - 1].text }}
+                    </div>
                   </div>
                 </div>
+                <div
+                  class="more-tasks"
+                  v-if="activitySchedules[activity.name].length > 3"
+                >
+                  <span
+                    >还有 {{ activitySchedules[activity.name].length - 3 }} 个任务</span
+                  >
+                </div>
+              </div>
+              <!-- 更多任务 -->
+              <div
+                class="more-tasks"
+                v-if="activitySchedules[activity.name].length > 3"
+                @click="activityDetails(activity)"
+              >
+                <span>还有 {{ activitySchedules[activity.name].length - 3 }} 个任务</span>
               </div>
             </div>
 
-            <div class="selection-indicator" v-if="selectedActivity === activity.name">
+            <div class="selection-indicator" v-show="selectedActivity == activity.name">
               <span class="check-icon">✓</span>
               <span>已选择</span>
             </div>
@@ -325,6 +412,14 @@ const joinActivity = () => {
 
   .schedule-content {
     flex: 1;
+    .type-name {
+      font-size: 0.8rem;
+      color: var(--text-color);
+      background: linear-gradient(45deg, var(--primary-color), #00c6fb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0.8;
+    }
 
     .schedule-name {
       font-weight: 500;
@@ -359,6 +454,7 @@ const joinActivity = () => {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 1rem;
+  color: var(--text-color);
 }
 
 .activity-container {
@@ -446,6 +542,21 @@ const joinActivity = () => {
 .join-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.more-tasks {
+  text-align: center;
+  padding: 0.5rem;
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.9rem;
+
+  span {
+    background: linear-gradient(45deg, var(--primary-color), #00c6fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+  }
 }
 
 @media (max-width: 768px) {

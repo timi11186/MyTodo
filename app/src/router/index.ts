@@ -42,37 +42,11 @@ const router = createRouter({
 
 // 添加路由守卫
 router.beforeEach((to, from, next) => {
-  const currentUser = localStorage.getItem('currentUser')
-  const selectedActivity = localStorage.getItem('selectedActivity')
-  
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!currentUser) {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }
-      })
-    } else {
-      // 如果用户已选择活动，直接跳转到待办页面
-      if (selectedActivity && to.path === '/activities') {
-        next('/todo')
-      } else if (!selectedActivity && to.path !== '/activities') {
-        // 如果用户未选择活动，除了活动选择页面外的其他页面都重定向到活动选择页面
-        next('/activities')
-      } else {
-        next()
-      }
-    }
+  // 如果用户未登录，重定向到登录页
+  if (!localStorage.getItem('currentUser') && to.path !== '/login') {
+    next('/login')
   } else {
-    if (currentUser && to.path === '/login') {
-      // 如果已登录用户访问登录页，重定向到合适的页面
-      if (selectedActivity) {
-        next('/todo')
-      } else {
-        next('/activities')
-      }
-    } else {
-      next()
-    }
+    next()
   }
 })
 

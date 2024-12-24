@@ -90,6 +90,7 @@ const closeSettings = (event: MouseEvent) => {
   --border-color: #e0e0e0;
   --hover-color: #f5f5f5;
   --nav-height: 64px;
+  --font-size: 16px;
 }
 
 .dark-mode {
@@ -100,6 +101,7 @@ const closeSettings = (event: MouseEvent) => {
   --text-color: #ffffff;
   --border-color: #2c2c2e;
   --hover-color: #2c2c2e;
+  --font-size: 14px;
 }
 
 body {
@@ -110,6 +112,7 @@ body {
   color: var(--text-color);
   transition: background-color 0.3s, color 0.3s;
   min-height: 100vh;
+  font-size: var(--font-size);
   position: relative;
 }
 
