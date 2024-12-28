@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-
+import { register } from '@/api/user'
 const router = useRouter()
 const isLogin = ref(true) // true为登录，false为注册
 const username = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!username.value || !password.value) {
     alert('请填写完整信息')
     return
@@ -29,14 +29,18 @@ const handleSubmit = () => {
     }
     localStorage.setItem('currentUser', username.value)
   } else {
-    const users = JSON.parse(localStorage.getItem('users') || '{}')
-    if (users[username.value]) {
-      alert('用户名已存在')
-      return
-    }
-    users[username.value] = password.value
-    localStorage.setItem('users', JSON.stringify(users))
-    localStorage.setItem('currentUser', username.value)
+    // const users = {}  
+    // if (users[username.value]) {
+    //   alert('用户名已存在')
+    //   return
+    // }
+    // users[username.value] = password.value
+    const res = await register({
+      username: username.value,
+      password: password.value
+    })
+    console.log(res)
+ 
   }
 
   router.push('/')
