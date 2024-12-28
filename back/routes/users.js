@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
+const { sm2 } = require('sm-crypto')
+var json = require('../json/key.json')
 
 var JWT = require('../utils/JWT');
 var { Message } = require('../utils/commit');
+const cipherMode = 1
 
 // token验证中间件
 const verifyToken = (req, res, next) => {
@@ -36,7 +39,12 @@ router.get('/', verifyToken, function (req, res, next) {
 });
 
 router.post('/register', function (req, res, next) {
+    console.log(json.privateKey);
     const { username, password } = req.body;
+    console.log("password <",password);
+    // 解密
+    const decryptedPassword = sm2.doDecrypt(password, json.privateKey,cipherMode);
+    console.log("decryptedPassword <",decryptedPassword);
     const token = JWT.createToken({ username, password });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(Message(200, '注册成功', token));

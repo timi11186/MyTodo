@@ -59,6 +59,10 @@ export default defineConfig(({ command, mode, isSsrBuild }) => {
           }
         }
       }
+    },
+
+    optimizeDeps: {
+      include: ['sm-crypto']
     }
   }
 }) 

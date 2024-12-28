@@ -2,11 +2,15 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { register } from '@/api/user'
+import {sm2} from 'sm-crypto'
+import { log } from 'console'
+
 const router = useRouter()
 const isLogin = ref(true) // true为登录，false为注册
 const username = ref('')
 const password = ref('')
 const confirmPassword = ref('')
+const cipherMode = 1
 
 const handleSubmit = async () => {
   if (!username.value || !password.value) {
@@ -35,9 +39,17 @@ const handleSubmit = async () => {
     //   return
     // }
     // users[username.value] = password.value
+    // 加密密码
+    const publicKey = import.meta.env.VITE_PUBLIC_KEY 
+    console.log(publicKey);
+    let encryptedPassword = sm2.doEncrypt(password.value, publicKey,cipherMode);
+    console.log(encryptedPassword);
+    
+
+
     const res = await register({
       username: username.value,
-      password: password.value
+      password: encryptedPassword
     })
     console.log(res)
  
